@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaliação de Bancas — SENAI DF</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --green-900: #0d3d2b;
+      --green-800: #1a5c3e;
+      --green-700: #1f7049;
+      --green-600: #1D9E75;
+      --green-500: #28c28e;
+      --green-400: #5dd6ab;
+      --green-100: #e8f7f2;
+      --green-50: #f2fbf7;
+      --gray-900: #1a1d25;
+      --gray-800: #252932;
+      --gray-700: #343844;
+      --gray-600: #4a4f5e;
+      --gray-500: #6b7080;
+      --gray-400: #9196a3;
+      --gray-300: #c0c4ce;
+      --gray-200: #dde0e8;
+      --gray-100: #eef0f4;
+      --gray-50: #f6f7fa;
+      --white: #ffffff;
+      --red: #e03e3e;
+      --amber: #d97706;
+      --blue: #2563eb;
+      --olive: #5a7a1a;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .08), 0 2px 4px rgba(0, 0, 0, .04);
+      --font: 'Outfit', sans-serif;
+      --mono: 'DM Mono', sans-serif;
+      --t: .18s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--gray-50);
+      color: var(--gray-900);
+      min-height: 100vh;
+      line-height: 1.5
+    }
+
+    .topbar {
+      background: var(--green-900);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .22)
+    }
+
+    .tlogo {
+      width: 32px;
+      height: 32px;
+      background: var(--green-600);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .tlogo svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2
+    }
+
+    .tinfo {
+      flex: 1
+    }
+
+    .ttitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: .01em
+    }
+
+    .tsub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .5);
+      margin-top: 1px
+    }
+
+    .tbadge {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 99px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .7);
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    .main {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 28px 20px 60px
+    }
+
+    .evcard {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .evicon {
+      width: 44px;
+      height: 44px;
+      background: var(--green-100);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .evicon svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--green-700);
+      fill: none;
+      stroke-width: 1.8
+    }
+
+    .evtext {
+      flex: 1;
+      min-width: 180px
+    }
+
+    .evlabel {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 5px
+    }
+
+    .evinput {
+      width: 100%;
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--gray-900);
+      border: none;
+      outline: none;
+      background: transparent;
+      border-bottom: 2px solid var(--gray-200);
+      padding: 4px 0;
+      transition: border-color var(--t)
+    }
+
+    .evinput:focus {
+      border-bottom-color: var(--green-600)
+    }
+
+    .evinput::placeholder {
+      color: var(--gray-300);
+      font-weight: 400
+    }
+
+    .evdate {
+      text-align: right;
+      flex-shrink: 0
+    }
+
+    .datelbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .dateval {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-top: 4px;
+      font-family: var(--mono)
+    }
+
+    .ovgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px
+    }
+
+    .ovc {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+      position: relative;
+      overflow: hidden
+    }
+
+    .ovc::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--green-600);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--t)
+    }
+
+    .ovc:hover {
+      border-color: var(--gray-300);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px)
+    }
+
+    .ovc.active {
+      border-color: var(--green-600);
+      box-shadow: 0 0 0 3px rgba(29, 158, 117, .12)
+    }
+
+    .ovc.active::after {
+      transform: scaleX(1)
+    }
+
+    .ovname {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .ovdot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      flex-shrink: 0
+    }
+
+    .ovc.active .ovdot,
+    .ovc.done .ovdot {
+      background: var(--green-600)
+    }
+
+    .ovscore {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1
+    }
+
+    .ovmax {
+      font-size: 10px;
+      color: var(--gray-400);
+      font-weight: 500
+    }
+
+    .ovpct {
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 3px
+    }
+
+    .ovbar {
+      height: 3px;
+      background: var(--gray-100);
+      border-radius: 99px;
+      margin-top: 8px;
+      overflow: hidden
+    }
+
+    .ovfill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--green-600);
+      transition: width .4s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .panel-container {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      overflow: hidden
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--gray-200);
+      background: var(--white);
+      scrollbar-width: none
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none
+    }
+
+    .tabpill {
+      padding: 11px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-500);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color var(--t), border-color var(--t);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: -1px;
+      font-family: var(--font)
+    }
+
+    .tabpill:hover {
+      color: var(--gray-800)
+    }
+
+    .tabpill.active {
+      color: var(--green-700);
+      border-bottom-color: var(--green-600)
+    }
+
+    .tabdot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gray-300)
+    }
+
+    .tabpill.active .tabdot {
+      background: var(--green-600)
+    }
+
+    .tabpill.done .tabdot {
+      background: var(--green-500)
+    }
+
+    .panel {
+      display: none
+    }
+
+    .panel.active {
+      display: block
+    }
+
+    .ph {
+      background: linear-gradient(135deg, var(--green-900) 0%, var(--green-800) 100%);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap
+    }
+
+    .phl {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .gavatar {
+      width: 42px;
+      height: 42px;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0
+    }
+
+    .pgname {
+      font-size: 18px;
+      font-weight: 700;
+      color: white
+    }
+
+    .pgsub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .5);
+      margin-top: 2px
+    }
+
+    .psbox {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: var(--radius-md);
+      padding: 10px 18px;
+      text-align: center;
+      min-width: 130px
+    }
+
+    .psval {
+      font-size: 26px;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+      font-family: var(--mono)
+    }
+
+    .pssub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .5);
+      margin-top: 3px
+    }
+
+    .ppw {
+      height: 4px;
+      background: rgba(255, 255, 255, .15);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 6px
+    }
+
+    .ppf {
+      height: 100%;
+      background: var(--green-400);
+      border-radius: 99px;
+      transition: width .4s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .lgrow {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--gray-100);
+      background: var(--gray-50)
+    }
+
+    .lgpill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gray-600);
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 99px;
+      padding: 3px 10px
+    }
+
+    .lgdot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .twrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    thead th {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 10px 12px;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      text-align: center;
+      white-space: nowrap
+    }
+
+    thead th:first-child {
+      text-align: left;
+      width: 36%;
+      min-width: 190px
+    }
+
+    thead th:last-child {
+      width: 8%
+    }
+
+    tbody tr {
+      transition: background var(--t)
+    }
+
+    tbody tr:hover td {
+      background: var(--green-50)
+    }
+
+    tbody tr:not(:last-child) td {
+      border-bottom: 1px solid var(--gray-100)
+    }
+
+    td {
+      padding: 12px 12px;
+      vertical-align: middle
+    }
+
+    .cnum {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      background: var(--green-100);
+      color: var(--green-800);
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      margin-right: 7px;
+      flex-shrink: 0;
+      font-family: var(--mono)
+    }
+
+    .cname {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center
+    }
+
+    .cdesc {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 3px;
+      line-height: 1.45;
+      padding-left: 27px
+    }
+
+    .rcell {
+      text-align: center
+    }
+
+    .rlabel {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background var(--t);
+      position: relative
+    }
+
+    .rlabel:hover {
+      background: var(--green-100)
+    }
+
+    .rlabel input[type=radio] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0
+    }
+
+    .rcirc {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-300);
+      transition: border-color var(--t), background var(--t);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .rcirc::after {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: white;
+      opacity: 0;
+      transition: opacity var(--t)
+    }
+
+    .rlabel input:checked~.rcirc {
+      border-color: var(--ac, var(--green-600));
+      background: var(--ac, var(--green-600))
+    }
+
+    .rlabel input:checked~.rcirc::after {
+      opacity: 1
+    }
+
+    .scell {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-300);
+      min-width: 50px
+    }
+
+    .scell.sv {
+      font-size: 14px;
+      font-weight: 600
+    }
+
+    .sbadge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700
+    }
+
+    .fbar {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--shadow-sm)
+    }
+
+    .fleft {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap
+    }
+
+    .tbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 8px 14px
+    }
+
+    .tlbl {
+      font-size: 11px;
+      color: var(--gray-500);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .tval {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      font-family: var(--mono)
+    }
+
+    .btnreset {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-500);
+      background: none;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 7px 13px;
+      cursor: pointer;
+      transition: all var(--t);
+      font-family: var(--font)
+    }
+
+    .btnreset:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: #fff5f5
+    }
+
+    .btnexp {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green-900);
+      color: white;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background var(--t), transform var(--t);
+      letter-spacing: .01em
+    }
+
+    .btnexp:hover {
+      background: var(--green-800);
+      transform: translateY(-1px)
+    }
+
+    .btnexp:active {
+      transform: translateY(0)
+    }
+
+    .btnexp svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray-300);
+      border-radius: 99px
+    }
+
+    @media(max-width:600px) {
+      .main {
+        padding: 16px 12px 40px
+      }
+
+      .topbar {
+        padding: 0 1rem
+      }
+
+      .ph {
+        padding: 16px
+      }
+
+      .psval {
+        font-size: 20px
+      }
+
+      td {
+        padding: 10px 8px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="tlogo"><svg viewBox="0 0 24 24">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg></div>
+    <div class="tinfo">
+      <div class="ttitle">Sistema de Avaliação — Banca Examinadora</div>
+      <div class="tsub">Aplicativo de Monitoramento de Consumo Sustentável · SENAI DF</div>
+    </div>
+    <div class="tbadge">Prof. Karython Gomes</div>
+  </div>
+  <div class="main">
+    <div class="evcard">
+      <div class="evicon"><svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg></div>
+      <div class="evtext">
+        <div class="evlabel">Avaliador(a) da banca</div>
+        <input class="evinput" id="prof-name" type="text" placeholder="Digite o nome do(a) professor(a) avaliador(a)…"
+          autocomplete="off" />
+      </div>
+      <div class="evdate">
+        <div class="datelbl">Data</div>
+        <div class="dateval" id="today"></div>
+      </div>
+    </div>
+    <div class="ovgrid" id="ovgrid"></div>
+    <div class="panel-container">
+      <div class="tabs-nav" id="tabnav"></div>
+      <div id="panels"></div>
+    </div>
+    <div class="fbar">
+      <div class="fleft">
+        <div class="tbox">
+          <span class="tlbl">Total geral</span>
+          <span class="tval" id="grand">0 / 0</span>
+        </div>
+        <span id="grandpct" style="font-size:13px;font-weight:600;color:var(--gray-400)">—</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btnreset" onclick="resetCurrent()">↺ Limpar grupo atual</button>
+        <button class="btnexp" onclick="exportar()">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const GROUPS = ["EchoDE", "Ecoconsumo", "ecoControl", "ecotally", "liqua monitor", "wavunder", "cnn"];
+    const CRITERIA = [
+      { name: "Solução proposta", desc: "Problema identificado, relevância da ideia e alinhamento com sustentabilidade" },
+      { name: "Funcionalidade do sistema", desc: "Cadastro, login, registro de consumo, metas e gráficos funcionando" },
+      { name: "Interface amigável", desc: "Design limpo, navegação intuitiva e consistência visual" },
+      { name: "Usabilidade do aplicativo", desc: "Facilidade de uso, fluxo das telas e experiência do usuário" },
+      { name: "Banco de dados e persistência", desc: "Modelagem correta, relacionamentos e dados mantidos após fechar o app" },
+      { name: "Qualidade técnica do código", desc: "Organização, boas práticas, separação de camadas e legibilidade" },
+      { name: "Segurança e requisitos não funcionais", desc: "Senhas criptografadas, acesso restrito, desempenho e compatibilidade" },
+      { name: "Testes e validações", desc: "Cenários testados, tratamento de erros e conformidade com os requisitos" },
+      { name: "Domínio sobre o projeto", desc: "Cada membro explica sua parte, decisões técnicas justificadas" },
+      { name: "Apresentação e clareza da ideia", desc: "Comunicação objetiva, demonstração ao vivo e resposta às perguntas" }
+    ];
+    const MAX = CRITERIA.length * 4;
+    const SC = ["#e03e3e", "#d97706", "#2563eb", "#5a7a1a", "#1D9E75"];
+    const SB = ["#fff0f0", "#fffbeb", "#eff6ff", "#f1f6e8", "#e8f7f2"];
+    const LB = ["Insuficiente", "Regular", "Bom", "Ótimo", "Excelente"];
+    let active = GROUPS[0];
+    const V = {};
+    GROUPS.forEach(g => { V[g] = {}; CRITERIA.forEach((_, i) => V[g][i] = null) });
+    const now = new Date();
+    document.getElementById("today").textContent = now.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+    function gScore(g) { return Object.values(V[g]).reduce((s, v) => s + (v !== null ? v : 0), 0) }
+    function gFilled(g) { return Object.values(V[g]).filter(v => v !== null).length }
+    function initials(n) { return n.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase() }
+    function pctColor(p) { if (p >= 75) return "var(--green-700)"; if (p >= 50) return "var(--olive)"; if (p >= 25) return "var(--amber)"; return "var(--red)" }
+    function buildAll() {
+      buildOv(); buildTabs(); buildPanels(); updateGrand();
+    }
+    function buildOv() {
+      const g = document.getElementById("ovgrid"); g.innerHTML = "";
+      GROUPS.forEach(gr => {
+        const s = gScore(gr), f = gFilled(gr), pct = f > 0 ? Math.round(s / MAX * 100) : 0;
+        const c = document.createElement("div");
+        c.className = "ovc" + (gr === active ? " active" : "");
+        c.id = "ov-" + gr; c.onclick = () => switchG(gr);
+        c.innerHTML = `<div class="ovname"><span class="ovdot"></span>${gr}</div><div style="display:flex;align-items:baseline;gap:3px;margin-top:4px"><span class="ovscore">${s}</span><span class="ovmax">/${MAX}</span></div><div class="ovpct" style="color:${f > 0 ? pctColor(pct) : "var(--gray-400)"}">${f > 0 ? pct + "%" : "—"}</div><div class="ovbar"><div class="ovfill" style="width:${pct}%"></div></div>`;
+        g.appendChild(c);
+      });
+    }
+    function updOv(gr) {
+      const c = document.getElementById("ov-" + gr); if (!c) return;
+      const s = gScore(gr), f = gFilled(gr), pct = f > 0 ? Math.round(s / MAX * 100) : 0;
+      c.querySelector(".ovscore").textContent = s;
+      const pe = c.querySelector(".ovpct"); pe.textContent = f > 0 ? pct + "%" : "—"; pe.style.color = f > 0 ? pctColor(pct) : "var(--gray-400)";
+      c.querySelector(".ovfill").style.width = pct + "%";
+      if (f === CRITERIA.length) c.classList.add("done");
+    }
+    function buildTabs() {
+      const n = document.getElementById("tabnav"); n.innerHTML = "";
+      GROUPS.forEach(gr => {
+        const b = document.createElement("button");
+        b.className = "tabpill" + (gr === active ? " active" : "");
+        b.id = "tab-" + gr; b.onclick = () => switchG(gr);
+        b.innerHTML = `<span class="tabdot"></span>${gr}`;
+        n.appendChild(b);
+      });
+    }
+    function buildPanels() {
+      const c = document.getElementById("panels"); c.innerHTML = "";
+      GROUPS.forEach(gr => {
+        const p = document.createElement("div");
+        p.className = "panel" + (gr === active ? " active" : "");
+        p.id = "panel-" + gr;
+        p.innerHTML = `<div class="ph"><div class="phl"><div class="gavatar">${initials(gr)}</div><div><div class="pgname">${gr}</div><div class="pgsub">10 critérios · máx. ${MAX} pontos</div></div></div><div class="psbox"><div class="psval" id="psv-${gr}">0<span style="font-size:13px;opacity:.5">/${MAX}</span></div><div class="pssub" id="pss-${gr}">Aguardando avaliação</div><div class="ppw"><div class="ppf" id="ppf-${gr}" style="width:0%"></div></div></div></div><div class="lgrow">${[0, 1, 2, 3, 4].map((v, i) => `<span class="lgpill"><span class="lgdot" style="background:${SC[i]}"></span>${LB[i]} (${v})</span>`).join("")}</div><div class="twrap"><table><thead><tr><th style="text-align:left">Critério de avaliação</th><th title="Insuficiente">0</th><th title="Regular">1</th><th title="Bom">2</th><th title="Ótimo">3</th><th title="Excelente">4</th><th>Nota</th></tr></thead><tbody id="tb-${gr}"></tbody></table></div>`;
+        c.appendChild(p);
+        const tb = document.getElementById("tb-" + gr);
+        CRITERIA.forEach((cr, i) => {
+          const tr = document.createElement("tr");
+          const rads = [0, 1, 2, 3, 4].map(v => `<td class="rcell"><label class="rlabel" style="--ac:${SC[v]}"><input type="radio" name="${gr}-c${i}" value="${v}" onchange="pick('${gr}',${i},${v})"><span class="rcirc"></span></label></td>`).join("");
+          tr.innerHTML = `<td><div class="cname"><span class="cnum">${String(i + 1).padStart(2, "0")}</span>${cr.name}</div><div class="cdesc">${cr.desc}</div></td>${rads}<td class="scell" id="sc-${gr}-${i}"><span style="color:var(--gray-300)">—</span></td>`;
+          tb.appendChild(tr);
+        });
+      });
+    }
+    function switchG(gr) {
+      active = gr;
+      document.querySelectorAll(".ovc").forEach((c, i) => c.classList.toggle("active", GROUPS[i] === gr));
+      document.querySelectorAll(".tabpill").forEach((t, i) => t.classList.toggle("active", GROUPS[i] === gr));
+      document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + gr));
+    }
+    function pick(gr, i, v) {
+      V[gr][i] = v;
+      const c = document.getElementById("sc-" + gr + "-" + i);
+      c.classList.add("sv");
+      c.innerHTML = `<span class="sbadge" style="background:${SB[v]};color:${SC[v]}">${v}</span>`;
+      updPanel(gr); updOv(gr); updateGrand();
+      document.getElementById("tab-" + gr).classList.add("done");
+    }
+    function updPanel(gr) {
+      const s = gScore(gr), f = gFilled(gr), pct = f > 0 ? Math.round(s / MAX * 100) : 0;
+      document.getElementById("psv-" + gr).innerHTML = `${s}<span style="font-size:13px;opacity:.5">/${MAX}</span>`;
+      const ss = document.getElementById("pss-" + gr);
+      if (f === 0) ss.textContent = "Aguardando avaliação";
+      else if (f < CRITERIA.length) ss.textContent = `${f}/${CRITERIA.length} critérios · ${pct}%`;
+      else ss.textContent = `Avaliação completa · ${pct}%`;
+      document.getElementById("ppf-" + gr).style.width = pct + "%";
+    }
+    function updateGrand() {
+      let tot = 0; GROUPS.forEach(g => tot += gScore(g));
+      const maxT = GROUPS.length * MAX;
+      document.getElementById("grand").textContent = tot + " / " + maxT;
+      const anyFilled = GROUPS.some(g => gFilled(g) > 0);
+      const pe = document.getElementById("grandpct");
+      if (anyFilled) { const p = Math.round(tot / maxT * 100); pe.textContent = p + "% geral"; pe.style.color = pctColor(p); }
+      else { pe.textContent = "—"; pe.style.color = "var(--gray-400)"; }
+    }
+    function resetCurrent() {
+      const gr = active;
+      if (!confirm("Limpar todas as notas de \"" + gr + "\"?")) return;
+      CRITERIA.forEach((_, i) => {
+        V[gr][i] = null;
+        document.querySelectorAll(`input[name="${gr}-c${i}"]`).forEach(r => r.checked = false);
+        const c = document.getElementById("sc-" + gr + "-" + i);
+        c.classList.remove("sv"); c.innerHTML = '<span style="color:var(--gray-300)">—</span>';
+      });
+      updPanel(gr); updOv(gr); updateGrand();
+      document.getElementById("tab-" + gr).classList.remove("done");
+    }
+    function exportar() {
+      const prof = document.getElementById("prof-name").value.trim() || "Não informado";
+      const dateStr = now.toLocaleDateString("pt-BR");
+      const wb = XLSX.utils.book_new();
+      GROUPS.forEach(gr => {
+        const s = gScore(gr), pct = Math.round(s / MAX * 100);
+        const rows = [
+          ["Avaliação — " + gr],
+          ["Avaliador(a):", prof, "Data:", dateStr],
+          [],
+          ["#", "Critério", "Descrição", "Nota", "Classificação"]
+        ];
+        CRITERIA.forEach((cr, i) => {
+          const v = V[gr][i];
+          rows.push([i + 1, cr.name, cr.desc, v !== null ? v : "", v !== null ? LB[v] : "Não avaliado"]);
+        });
+        rows.push([], [" ", "TOTAL", "", s, ""], [" ", "MÁXIMO", "", MAX, ""], [" ", "APROVEITAMENTO", "", pct + "%", ""]);
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws["!cols"] = [{ wch: 4 }, { wch: 32 }, { wch: 52 }, { wch: 8 }, { wch: 16 }];
+        XLSX.utils.book_append_sheet(wb, ws, gr.substring(0, 31));
+      });
+      const srows = [["Resumo Geral — Avaliação de Bancas"], ["Avaliador(a):", prof, "Data:", dateStr], [], ["Grupo", "Pontuação", "Máximo", "Aproveitamento", "Status"]];
+      let grand = 0;
+      GROUPS.forEach(gr => {
+        const s = gScore(gr), f = gFilled(gr), pct = f > 0 ? Math.round(s / MAX * 100) : 0;
+        srows.push([gr, s, MAX, f > 0 ? pct + "%" : "—", f === 0 ? "Não avaliado" : f < CRITERIA.length ? "Incompleto" : "Completo"]);
+        grand += s;
+      });
+      srows.push([], ["TOTAL GERAL", grand, GROUPS.length * MAX, Math.round(grand / (GROUPS.length * MAX) * 100) + "%", ""]);
+      const ws2 = XLSX.utils.aoa_to_sheet(srows);
+      ws2["!cols"] = [{ wch: 18 }, { wch: 12 }, { wch: 10 }, { wch: 16 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws2, "Resumo");
+      const fname = "avaliacao_banca_" + now.toISOString().slice(0, 10) + (prof !== "Não informado" ? "_" + prof.replace(/\s+/g, "_").substring(0, 20) : "") + ".xlsx";
+      XLSX.writeFile(wb, fname);
+    }
+    buildAll();
+  </script>
+</body>
+
+</html>
